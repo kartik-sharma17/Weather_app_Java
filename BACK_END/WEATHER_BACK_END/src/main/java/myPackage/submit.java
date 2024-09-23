@@ -51,8 +51,8 @@ public class submit extends HttpServlet {
 		String city_name = request.getParameter("city_name");
 		
 //		setup the variable for api
-		String key = "1662c7c76e2780a3eb7c6004a4c5f43d";
-		
+		String key = "";
+		// hide the api key due to github guidelines
 		
 		String url = "https://api.openweathermap.org/data/2.5/weather?q="+city_name+"&appid="+ key;
 		
