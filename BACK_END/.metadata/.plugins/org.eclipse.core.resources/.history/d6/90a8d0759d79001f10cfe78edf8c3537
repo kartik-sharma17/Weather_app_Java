@@ -1,0 +1,158 @@
+package myPackage;
+
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.DecimalFormat;
+import java.util.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+/**
+ * Servlet implementation class submit
+ */
+@WebServlet("/submit")
+public class submit extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public submit() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		response.getWriter().append("Served at: ").append(request.getContextPath());
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+		
+//		getting the required data from front end 
+		String city_name = request.getParameter("city_name");
+		
+//		setup the variable for api
+		String key = "1662c7c76e2780a3eb7c6004a4c5f43d";
+		
+		
+		String url = "https://api.openweathermap.org/data/2.5/weather?q="+city_name+"&appid="+ key;
+		
+//		coverting the string url into url form 
+		URL main_url = new URL(url);
+		
+//		we open the connection
+		HttpURLConnection con = (HttpURLConnection) main_url.openConnection();
+		con.setRequestMethod("GET");
+		
+//		now getting the data 
+		InputStream input_get = con.getInputStream();
+		
+//		 convert the format into readable form 
+		InputStreamReader read_data = new InputStreamReader(input_get);
+		
+//		to store the data 
+		StringBuilder content = new StringBuilder();		
+
+//		to scanner the data from read data we make the scanner 
+		Scanner sc = new Scanner(read_data);
+		
+//		using loop to read all the data and save in content
+		while(sc.hasNext()) {
+			content.append(sc.nextLine());
+		}
+		
+
+//		new typecasting the data in json  from string 
+//		have to include jar file in lib or dependency in pom.xml
+		Gson json_data = new Gson();
+		JsonObject	data_in_json = json_data.fromJson(content.toString(),JsonObject.class);
+		
+//		now seperating the data from json object to use
+		
+//		getting the temp
+		float temp = data_in_json.getAsJsonObject("main").get("temp").getAsFloat();
+		
+//		converting into cel -
+		Double temp2 =  temp- 273.15;
+		
+//		converting the value into Float
+		float temp3 = temp2.floatValue();
+		
+//		now decreasing the length to 1 , import decimal format from java.text
+		DecimalFormat df = new DecimalFormat("#.#");
+
+		String final_temp = df.format(temp3);
+		
+//		retriving the feel like temperature 
+		
+		float feel_like1 = data_in_json.getAsJsonObject("main").get("feels)_like").getAsFloat();
+		
+//		converting into cel -
+		Double feel_like2 =  feel_like1- 273.15;
+		
+		
+		
+		
+		
+		
+		
+		
+		request.setAttribute("temperature",final_temp);
+		
+		
+		con.disconnect();
+		
+		request.getRequestDispatcher("common.jsp").forward(request,response);
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	
+	}
+
+}
+
+
+
+
+
+
+
+
+
